@@ -5,15 +5,6 @@ const blogSchema = new mongoose.Schema({
   test: {
     type: String,
   },
-  // mainHead: {
-  //   type: String,
-  // },
-  // description: {
-  //   type: String,
-  // },
-  // conclustion: {
-  //   type: String,
-  // },
   metaTitle: {
     type: String,
   },
@@ -22,5 +13,5 @@ const blogSchema = new mongoose.Schema({
   },
 });
 
-const Blog = mongoose.model("Blogs", blogSchema);
+const Blog = mongoose.model("BlogsTest", blogSchema);
 exports.Blog = Blog;

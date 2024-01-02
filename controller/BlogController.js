@@ -1,54 +1,21 @@
 const { uploader } = require("../config/Cloudinary");
 const _ = require("lodash");
-const { Blog } = require("../model/BlogSchema");
+// const { Blog } = require("../model/BlogSchema");
+const { Blog } = require("../model/BlogTestSchema");
+const cheerio = require("cheerio");
 
 //////// POST BLOG ⭐⭐⭐⭐/////////
 
 const postBlog = async (req, res) => {
-  const file = req.files;
-
+  const file = req.files[0];
   if (!file) return res.status(400).send("no picture privide");
-  let multiPicturePromise = file.map((item) =>
-    uploader.upload(item.path, { public_id: item.originalname.split(".")[0] })
+  const mainImage = await uploader.upload(file.path);
+  const newBlog = new Blog(
+    _.pick(JSON.parse(req.body.blog), ["test", "metaTitle", "metaDescription"])
   );
-  const imageRespomse = await Promise.all(multiPicturePromise);
-  const imgArry = imageRespomse.map((img) => img.url);
-
-  const blog = new Blog(
-    _.pick(JSON.parse(req.body.blog), [
-      "test",
-      "mainHead",
-      "description",
-      "conclustion",
-      "metaDescription",
-      "metaTitle",
-    ])
-  );
-  const addImageToTes = (data, imgArray) => {
-    return data.map((item) => {
-      const matchingImage = imgArray.find((img) => img.includes(item.name));
-      if (matchingImage) {
-        item.image = matchingImage;
-      }
-      return item;
-    });
-  };
-  const updatedTestwithImage = addImageToTes(blog.test, imgArry);
-
-  blog.photos = imgArry[0];
-
-  await blog.save();
+  newBlog.photos = mainImage.url;
+  await newBlog.save();
   res.status(200).send("successfully posted blog");
-};
-
-////////// GET ALL BLOG 🔮🔮 ////////
-
-const getBlogs = async (req, res) => {
-  const blog = req.query.blogId
-    ? await Blog.findById(req.query.blogId)
-    : await Blog.find();
-
-  res.status(200).send(blog);
 };
 
 /// DELELTE BLOG 🤡🤡//////////////
@@ -59,12 +26,19 @@ const deleletBlog = async (req, res) => {
 
 ////// GET LATEST BLOG 🤡🤡🤡/////////
 const getLatestBlog = async (req, res) => {
-  const latesBlog = await Blog.find()
-    .sort({ _id: -1 })
-    .limit(4)
-    .select({ mainHead: 1, photos: 1 });
-  if (!latesBlog) return res.status(404).send("no blog");
-  res.status(200).send(latesBlog);
+  const latesBlog = await Blog.find().sort({ _id: -1 }).limit(4);
+  const latest = latesBlog.map((item) => {
+    const $ = cheerio.load(item.test);
+    const heading = $("h1").text();
+    return {
+      _id: item._id,
+      heading: heading,
+      photos: item.photos,
+    };
+  });
+
+  if (!latest) return res.status(404).send("no blog");
+  res.status(200).send(latest);
 };
 
 ////////// UPDATE BLOG 👨‍🔧👨‍🔧👨‍🔧👨‍🔧 //////
@@ -73,10 +47,35 @@ const updatedBlog = async (req, res) => {
   await blog.save();
   res.status(200).send(blog);
 };
+
+///////////  TEST GET ALL TEST BLOG ////////////
+const getAllTestBlog = async (req, res) => {
+  if (req.query.blogId) {
+    const blog = await Blog.findById(req.query.blogId);
+    if (!blog) return res.status(400).send("ther is no blog with this id");
+    res.status(200).send(blog);
+  } else {
+    const blog = await Blog.find();
+    if (!blog) return res.status(400).send("ther is no blog with this id");
+    const data = blog.map((item) => {
+      const $ = cheerio.load(item.test);
+      const heading = $("h1").text();
+      const description = $("h3").text();
+      return {
+        heading: heading,
+        description: description,
+        photos: item.photos,
+        _id: item._id,
+      };
+    });
+    res.status(200).send(data);
+  }
+};
+
 module.exports = {
   postBlog,
-  getBlogs,
   deleletBlog,
   getLatestBlog,
   updatedBlog,
+  getAllTestBlog,
 };
