@@ -6,9 +6,11 @@ module.exports = function (handler) {
       if (err.code === "ERR_SOCKET_CONNECTION_TIMEOUT") {
         // Handle the timeout error
         console.error("Socket connection timed out. Please try again later.");
+        res.status(400).send(err);
       } else {
         // Handle other types of errors
         console.error("An error occurred:", err);
+        res.status(400).send(err);
       }
     }
   };

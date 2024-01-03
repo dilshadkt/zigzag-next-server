@@ -6,8 +6,12 @@ const cheerio = require("cheerio");
 //////// POST BLOG ⭐⭐⭐⭐/////////
 const postBlog = async (req, res) => {
   const file = req.files[0];
+
   if (!file) return res.status(400).send("no picture privide");
-  const mainImage = await uploader.upload(file.path);
+
+  const mainImage = await uploader.upload(file.path, {
+    public_id: file.originalname,
+  });
   const newBlog = new Blog(
     _.pick(JSON.parse(req.body.blog), ["test", "metaTitle", "metaDescription"])
   );
@@ -46,7 +50,9 @@ const updatedBlog = async (req, res) => {
   const dataToUpdate = req.body;
   const file = req.file;
   if (file) {
-    const image = await uploader.upload(file.path);
+    const image = await uploader.upload(file.path, {
+      public_id: file.originalname,
+    });
     dataToUpdate.photos = image.url;
   }
   const blog = await Blog.findOneAndUpdate(
@@ -59,7 +65,7 @@ const updatedBlog = async (req, res) => {
   return res.status(200).send(blog);
 };
 
-///////////  TEST GET ALL TEST BLOG ////////////
+///////////   GET ALL  BLOG ////////////
 const getAllTestBlog = async (req, res) => {
   if (req.query.blogId) {
     const blog = await Blog.findById(req.query.blogId);
@@ -71,7 +77,7 @@ const getAllTestBlog = async (req, res) => {
     const data = blog.map((item) => {
       const $ = cheerio.load(item.test);
       const heading = $("h1").text();
-      const description = $("h3").text();
+      const description = $("p").text();
       return {
         heading: heading,
         description: description,

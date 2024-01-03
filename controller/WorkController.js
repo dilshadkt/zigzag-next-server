@@ -6,7 +6,9 @@ const { Work } = require("../model/WorkSchema");
 const postWork = async (req, res) => {
   let file = req.files[0];
   if (!file) return res.status(400).send("no picture attached");
-  const Newimage = await uploader.upload(file.path);
+  const Newimage = await uploader.upload(file.path, {
+    public_id: file.originalname,
+  });
   const newAddedImage = new Work({
     image: Newimage.url,
     type: req.body.category,
@@ -45,7 +47,6 @@ const updateWorks = async (req, res) => {
 const getLatestWorkd = async (req, res) => {
   const latestWork = await Work.find().sort({ _id: -1 }).limit(4);
   res.status(200).send(latestWork);
-  res;
 };
 module.exports = {
   postWork,

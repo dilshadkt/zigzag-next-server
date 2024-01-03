@@ -6,7 +6,9 @@ const _ = require("lodash");
 const postTestimonial = async (req, res) => {
   const file = req.file;
   if (!file) return res.status(400).send("no file attached");
-  image = await uploader.upload(file.path);
+  image = await uploader.upload(file.path, {
+    public_id: file.originalname,
+  });
   if (!image)
     return res
       .status(400)

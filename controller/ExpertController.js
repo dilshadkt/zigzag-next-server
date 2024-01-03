@@ -4,8 +4,9 @@ const { Expert } = require("../model/ExpertSchema");
 const addExperts = async (req, res) => {
   let file = req.file;
   if (!file) return res.status(400).send("no picture attached");
-  console.log(req.body);
-  const newImage = await uploader.upload(file.path);
+  const newImage = await uploader.upload(file.path, {
+    public_id: file.originalname,
+  });
   const newExpert = new Expert({
     image: newImage.url,
     name: req.body.name,

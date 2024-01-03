@@ -5,7 +5,9 @@ const { uploader } = require("../config/Cloudinary");
 const postClient = async (req, res) => {
   const file = req.file;
   if (!file) return res.status(400).send("no image provided");
-  const clientLogo = await uploader.upload(file.path);
+  const clientLogo = await uploader.upload(file.path, {
+    public_id: file.originalname,
+  });
   const clients = new Client({
     image: clientLogo.url,
     name: req.body.name,
@@ -24,6 +26,8 @@ const deleteClient = async (req, res) => {
   await Client.findByIdAndDelete(req.params.clientId);
   res.status(200).send("succefully deleted");
 };
+
+////// UPDATE CLIENT ////////
 
 const updateClients = async (req, res) => {
   console.log(req.params.clientId);
