@@ -1,4 +1,10 @@
 {
+  "engines": {
+    "node": "14.x"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
     "cloudinary": "^1.41.0",
