@@ -13,8 +13,9 @@ const loginRout = require("./router/loginRout");
 const { cloudinaryConfig } = require("./config/Cloudinary");
 mongoose
   .connect(process.env.MONGO_URL)
-  .then(() => "connection is good")
+  .then(() => console.log("connection is good"))
   .catch((err) => console.log(err));
+
 app.use(cors());
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: false }));
