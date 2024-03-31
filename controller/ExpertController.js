@@ -1,12 +1,24 @@
 const { uploader } = require("../config/Cloudinary");
+const DeleteFromCloudinary = require("../config/DeleteFileCloudinary/DeleteFromCloudinary");
+const FileRemover = require("../config/FileRemover/FileRemove");
 const { Expert } = require("../model/ExpertSchema");
-
+const fs = require("fs");
 const addExperts = async (req, res) => {
   let file = req.file;
   if (!file) return res.status(400).send("no picture attached");
-  const newImage = await uploader.upload(file.path, {
-    public_id: file.originalname,
-  });
+  const newImage = await uploader.upload(
+    file.path,
+    {
+      public_id: file.originalname,
+    },
+    (error) => {
+      if (error) {
+        res.status(400).send(error);
+      } else {
+        FileRemover(file);
+      }
+    }
+  );
   const newExpert = new Expert({
     image: newImage.url,
     name: req.body.name,
@@ -23,9 +35,11 @@ const getAllExperts = async (req, res) => {
 };
 ///////// DELETE EXPERTS 👻👻👻///////
 const deleteExpert = async (req, res) => {
-  const expert = await Expert.findByIdAndDelete(req.params.expertId);
+  const id = req.params.expertId;
+  const expert = await Expert.findById(id);
+  await DeleteFromCloudinary(expert.image);
+  await expert.deleteOne();
   if (!expert) return res.status(400).send("ther is no expert");
-
   res.status(200).send("successfully deleted");
 };
 ///// UPDATE EXPERTS 👨‍🔧👨‍🔧👨‍🔧👨‍🔧/////////

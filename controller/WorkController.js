@@ -1,14 +1,26 @@
 const { uploader } = require("../config/Cloudinary");
 const fs = require("fs");
 const { Work } = require("../model/WorkSchema");
+const FileRemover = require("../config/FileRemover/FileRemove");
+const DeleteFromCloudinary = require("../config/DeleteFileCloudinary/DeleteFromCloudinary");
 
 /////////   ADD NEW WORK   //////////////
 const postWork = async (req, res) => {
   let file = req.files[0];
   if (!file) return res.status(400).send("no picture attached");
-  const Newimage = await uploader.upload(file.path, {
-    public_id: file.originalname,
-  });
+  const Newimage = await uploader.upload(
+    file.path,
+    {
+      public_id: file.originalname,
+    },
+    (error) => {
+      if (error) {
+        res.status(400).send(error);
+      } else {
+        FileRemover(file);
+      }
+    }
+  );
   const newAddedImage = new Work({
     image: Newimage.url,
     type: req.body.category,
@@ -30,8 +42,10 @@ const getAllWork = async (req, res) => {
 
 /////// DELETE WORK  /////////////
 const deleteWork = async (req, res) => {
-  const work = await Work.findByIdAndDelete(req.params.worksId);
-  if (!work) return res.status(400).send("ther is no works");
+  const work = await Work.findById(req.params.worksId);
+  await DeleteFromCloudinary(work.image);
+
+  await Work.findByIdAndDelete(req.params.worksId);
 
   res.status(200).send("successfully dleleted");
 };

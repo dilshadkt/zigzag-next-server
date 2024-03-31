@@ -1,13 +1,25 @@
 const { Client } = require("../model/ClientSchema");
 const { uploader } = require("../config/Cloudinary");
+const FileRemover = require("../config/FileRemover/FileRemove");
+const DeleteFromCloudinary = require("../config/DeleteFileCloudinary/DeleteFromCloudinary");
 
 /////////  ADD CLIENTS ✅✅✅✅ /////////
 const postClient = async (req, res) => {
   const file = req.file;
   if (!file) return res.status(400).send("no image provided");
-  const clientLogo = await uploader.upload(file.path, {
-    public_id: file.originalname,
-  });
+  const clientLogo = await uploader.upload(
+    file.path,
+    {
+      public_id: file.originalname,
+    },
+    (error) => {
+      if (error) {
+        res.status(400).json({ error });
+      } else {
+        FileRemover(file);
+      }
+    }
+  );
   const clients = new Client({
     image: clientLogo.url,
     name: req.body.name,
@@ -23,7 +35,9 @@ const getClients = async (req, res) => {
 
 /////// DELETE A CLIENT //////////////////
 const deleteClient = async (req, res) => {
-  await Client.findByIdAndDelete(req.params.clientId);
+  const clientLogo = await Client.findById(req.params.clientId);
+  await DeleteFromCloudinary(clientLogo.image);
+  await clientLogo.deleteOne();
   res.status(200).send("succefully deleted");
 };
 
