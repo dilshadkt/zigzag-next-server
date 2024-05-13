@@ -2,6 +2,7 @@ const { Seo } = require("../model/SeoSchema");
 const { uploader } = require("../config/Cloudinary");
 const _ = require("lodash");
 const fs = require("fs");
+
 const PostSeoContent = async (req, res) => {
   const file = req.files[0];
   const image = await uploader.upload(
