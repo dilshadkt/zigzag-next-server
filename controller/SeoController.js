@@ -2,40 +2,35 @@ const { Seo } = require("../model/SeoSchema");
 const { uploader } = require("../config/Cloudinary");
 const _ = require("lodash");
 const fs = require("fs");
+const FileRemover = require("../config/FileRemover/FileRemove");
 
 const PostSeoContent = async (req, res) => {
-  const file = req.files[0];
-  const image = await uploader.upload(
-    file.path,
-    {
-      public_id: file.originalname,
-    },
-    (error) => {
-      if (error) {
-        res.status(400).send(error);
-      } else {
-        fs.unlink(`./uploads/${file.filename}`, (err) => {
-          if (err) {
-            console.error("Error removing directory:", err);
-            return;
-          }
-        });
-      }
+  const data = JSON.parse(req.body.data);
+  const images = req.files;
+  const imageUrls = await Promise.all(
+    images.map((image) =>
+      uploader.upload(image.path).then((response) => response.url)
+    )
+  );
+  images.forEach((image) => FileRemover(image));
+  data.page.forEach((page, index) => {
+    if (imageUrls[index]) {
+      page.image = imageUrls[index];
     }
-  );
-  const newContent = new Seo(
-    _.pick(JSON.parse(req.body.blog), [
-      "test",
-      "metaTitle",
-      "path",
-      "ogDescription",
-      "metaDescription",
-      "metaKeyWord",
-      "ogTitle",
-    ])
-  );
-  newContent.photos = image.url;
-  await newContent.save();
+  });
+
+  const metaData = _.pick(data.metaData, [
+    "metaTitle",
+    "ogTitle",
+    "path",
+    "ogDescription",
+    "metaDescription",
+    "metaKeyWord",
+  ]);
+  const newPageData = { ...metaData, page: data.page };
+  const newPage = new Seo(newPageData);
+
+  await newPage.save();
   res.status(200).send("successfully posted blog");
 };
 const deleteImage = async (req, res) => {
@@ -51,6 +46,7 @@ const getSeoContent = async (req, res) => {
 const getBlog = async (req, res) => {
   const blogPath = req.params.blogPath;
   const blog = await Seo.findOne({ path: blogPath });
+
   res.status(200).send(blog);
 };
 
@@ -68,36 +64,30 @@ const deleteContent = async (req, res) => {
 
 const updateContent = async (req, res) => {
   const contentId = req.query.contentId;
-  const contentToUpdate = req.body;
-  const imageFileToUpload = req.file;
-  if (imageFileToUpload) {
-    const image = await uploader.upload(
-      imageFileToUpload.path,
-      {
-        public_id: imageFileToUpload.originalname,
-      },
-      (error) => {
-        if (error) {
-          res.status(400).json({ error });
-        } else {
-          fs.unlink(`./uploads/${imageFileToUpload.filename}`, (err) => {
-            if (err) {
-              console.error("Error removing directory:", err);
-              return;
-            }
-          });
-        }
-      }
+  const contentToUpdate = JSON.parse(req.body.updation);
+  // console.log(contentToUpdate);
+  const images = req.files;
+  console.log(images);
+  const indexArray = [req.body.index];
+  console.log(indexArray);
+  if (images.length !== 0) {
+    const imageUrls = await Promise.all(
+      images.map((image) =>
+        uploader
+          .upload(image.path, {
+            public_id: image.originalname,
+          })
+          .then((response) => response.url)
+      )
     );
-    contentToUpdate.photos = image.url;
-    const content = await Seo.findById(contentId);
-    const photoAssetId = content.photos
-      .split("/")
-      [content.photos.split("/").length - 1].slice(0, -4);
-    const decodedName = decodeURIComponent(photoAssetId);
-    await uploader.destroy(decodedName);
+    images.forEach((image) => FileRemover(image));
+    indexArray.forEach((index, i) => {
+      const currentItem = contentToUpdate.page[index];
+      currentItem.image = imageUrls[i];
+    });
   }
 
+  console.log(contentToUpdate);
   const newContent = await Seo.findOneAndUpdate(
     {
       _id: contentId,
@@ -107,6 +97,44 @@ const updateContent = async (req, res) => {
   );
   await newContent.save();
   return res.status(200).send(newContent);
+  //
+  // if (imageFileToUpload) {
+  //   const image = await uploader.upload(
+  //     imageFileToUpload.path,
+  //     {
+  //       public_id: imageFileToUpload.originalname,
+  //     },
+  //     (error) => {
+  //       if (error) {
+  //         res.status(400).json({ error });
+  //       } else {
+  //         fs.unlink(`./uploads/${imageFileToUpload.filename}`, (err) => {
+  //           if (err) {
+  //             console.error("Error removing directory:", err);
+  //             return;
+  //           }
+  //         });
+  //       }
+  //     }
+  //   );
+  //   contentToUpdate.photos = image.url;
+  //   const content = await Seo.findById(contentId);
+  //   const photoAssetId = content.photos
+  //     .split("/")
+  //     [content.photos.split("/").length - 1].slice(0, -4);
+  //   const decodedName = decodeURIComponent(photoAssetId);
+  //   await uploader.destroy(decodedName);
+  // }
+
+  // const newContent = await Seo.findOneAndUpdate(
+  //   {
+  //     _id: contentId,
+  //   },
+  //   { $set: contentToUpdate },
+  //   { new: true }
+  // );
+  // await newContent.save();
+  // return res.status(200).send(newContent);
 };
 module.exports = {
   PostSeoContent,

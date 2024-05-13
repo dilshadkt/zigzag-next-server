@@ -14,12 +14,12 @@ const {
 
 router.post(
   "/add-seo",
-  upload.array("photos"),
+  upload.array("images", 10),
   asyncMiddleWare(PostSeoContent)
 );
 router.delete("/delete/:imageId", asyncMiddleWare(deleteImage));
 router.get("/", asyncMiddleWare(getSeoContent));
 router.get("/:blogPath", asyncMiddleWare(getBlog));
 router.delete("/", asyncMiddleWare(deleteContent));
-router.patch("/", upload.single("photos"), asyncMiddleWare(updateContent));
+router.patch("/", upload.array("image", 10), asyncMiddleWare(updateContent));
 module.exports = router;

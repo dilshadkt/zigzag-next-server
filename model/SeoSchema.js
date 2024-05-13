@@ -1,9 +1,19 @@
 const mongoose = require("mongoose");
 
-const SeoSchema = new mongoose.Schema({
-  test: {
+const pageSchema = new mongoose.Schema({
+  heading: {
     type: String,
   },
+  description: {
+    type: String,
+  },
+  image: {
+    type: String,
+  },
+});
+
+const SeoSchema = new mongoose.Schema({
+  page: [pageSchema],
   photos: { type: String },
   metaTitle: {
     type: String,
@@ -12,7 +22,7 @@ const SeoSchema = new mongoose.Schema({
     type: String,
   },
   metaKeyWord: {
-    type: String,
+    type: [String],
   },
   ogTitle: {
     type: String,
