@@ -31,7 +31,8 @@ const postTestimonial = async (req, res) => {
   );
   testimonial.photos = image.url;
   await testimonial.save();
-  res.status(200).send("successfully added new testimonial");
+  const testimonials = await Testimonial.find();
+  res.status(200).json({ testimonials });
 };
 
 ////// GET ALL TESTIMONIAL 🤡🤡🤡 //////
@@ -45,17 +46,41 @@ const deleteTestimonial = async (req, res) => {
   const testMonial = await Testimonial.findById(req.params.id);
   await DeleteFromCloudinary(testMonial.photos);
   await testMonial.deleteOne();
-  res.status(200).send("succefully removed");
+  const testimonials = await Testimonial.find();
+  res.status(200).json({ testimonials });
 };
 
 ///// UPDATE TESTIMONIALS ✅✅✅✅ //////
 const updateTestimonias = async (req, res) => {
-  const testimonials = await Testimonial.findByIdAndUpdate(
-    req.params.id,
-    req.body
+  const updation = JSON.parse(req.body.updation);
+  const file = req.file;
+  const testimonialId = req.params.id;
+
+  if (file) {
+    const image = await uploader.upload(
+      file.path,
+      {
+        public_id: file.originalname,
+      },
+      (error) => {
+        if (error) {
+          res.status(400).json({ error });
+        } else {
+          FileRemover(file);
+        }
+      }
+    );
+    updation.photos = image.url;
+    const testimonial = await Testimonial.findById(testimonialId);
+    await DeleteFromCloudinary(testimonial.photos);
+  }
+  const updatedTestimonial = await Testimonial.findByIdAndUpdate(
+    testimonialId,
+    updation
   );
-  await testimonials.save();
-  res.status(200).send("succefully  updated");
+  await updatedTestimonial.save();
+  const testimonials = await Testimonial.find();
+  res.status(200).json({ testimonials });
 };
 module.exports = {
   postTestimonial,

@@ -25,7 +25,8 @@ const addExperts = async (req, res) => {
     role: req.body.role,
   });
   await newExpert.save();
-  res.status(200).send(newImage.url);
+  const experts = await Expert.find();
+  res.status(200).json({ experts });
 };
 ///////// ALL EXPERTS 🥸🥸🥸////////
 
@@ -40,7 +41,8 @@ const deleteExpert = async (req, res) => {
   await DeleteFromCloudinary(expert.image);
   await expert.deleteOne();
   if (!expert) return res.status(400).send("ther is no expert");
-  res.status(200).send("successfully deleted");
+  const experts = await Expert.find();
+  res.status(200).json({ experts });
 };
 ///// UPDATE EXPERTS 👨‍🔧👨‍🔧👨‍🔧👨‍🔧/////////
 const updateExperts = async (req, res) => {
@@ -71,7 +73,8 @@ const updateExperts = async (req, res) => {
     dataToUpdate
   );
   await expert.save();
-  res.status(200).send("succefully updated");
+  const experts = await Expert.find();
+  res.status(200).json({ experts });
 };
 
 module.exports = { addExperts, getAllExperts, deleteExpert, updateExperts };

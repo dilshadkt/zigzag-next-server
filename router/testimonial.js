@@ -13,6 +13,10 @@ const {
 router.post("/", upload.single("photos"), asyncMiddleWare(postTestimonial));
 router.get("/", asyncMiddleWare(getTestimonial));
 router.delete("/:id", asyncMiddleWare(deleteTestimonial));
-router.patch("/:id", asyncMiddleWare(updateTestimonias));
+router.patch(
+  "/:id",
+  upload.single("photos"),
+  asyncMiddleWare(updateTestimonias)
+);
 
 module.exports = router;

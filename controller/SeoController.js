@@ -69,7 +69,7 @@ const updateContent = async (req, res) => {
   const contentToUpdate = JSON.parse(req.body.updation);
   const images = req.files;
   const indexArray = [req.body.index];
-  console.log(indexArray);
+
   if (images.length !== 0) {
     const imageUrls = await Promise.all(
       images.map((image) =>
@@ -87,54 +87,17 @@ const updateContent = async (req, res) => {
     });
   }
 
-  console.log(contentToUpdate);
+  const { metaData, page } = contentToUpdate;
+  const upation = { ...metaData, page };
   const newContent = await Seo.findOneAndUpdate(
     {
       _id: contentId,
     },
-    { $set: contentToUpdate },
+    { $set: upation },
     { new: true }
   );
   await newContent.save();
   return res.status(200).send(newContent);
-  //
-  // if (imageFileToUpload) {
-  //   const image = await uploader.upload(
-  //     imageFileToUpload.path,
-  //     {
-  //       public_id: imageFileToUpload.originalname,
-  //     },
-  //     (error) => {
-  //       if (error) {
-  //         res.status(400).json({ error });
-  //       } else {
-  //         fs.unlink(`./uploads/${imageFileToUpload.filename}`, (err) => {
-  //           if (err) {
-  //             console.error("Error removing directory:", err);
-  //             return;
-  //           }
-  //         });
-  //       }
-  //     }
-  //   );
-  //   contentToUpdate.photos = image.url;
-  //   const content = await Seo.findById(contentId);
-  //   const photoAssetId = content.photos
-  //     .split("/")
-  //     [content.photos.split("/").length - 1].slice(0, -4);
-  //   const decodedName = decodeURIComponent(photoAssetId);
-  //   await uploader.destroy(decodedName);
-  // }
-
-  // const newContent = await Seo.findOneAndUpdate(
-  //   {
-  //     _id: contentId,
-  //   },
-  //   { $set: contentToUpdate },
-  //   { new: true }
-  // );
-  // await newContent.save();
-  // return res.status(200).send(newContent);
 };
 module.exports = {
   PostSeoContent,
