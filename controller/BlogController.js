@@ -8,7 +8,7 @@ const DeleteFromCloudinary = require("../config/DeleteFileCloudinary/DeleteFromC
 //////// POST BLOG ⭐⭐⭐⭐/////////
 const postBlog = async (req, res) => {
   const file = req.files[0];
-
+  const dataToAddd = JSON.parse(req.body.blog);
   if (!file) return res.status(400).send("no picture privide");
 
   const mainImage = await uploader.upload(
@@ -24,9 +24,8 @@ const postBlog = async (req, res) => {
       }
     }
   );
-  const newBlog = new Blog(
-    _.pick(JSON.parse(req.body.blog), ["test", "metaTitle", "metaDescription"])
-  );
+  const metaData = dataToAddd.metaData;
+  const newBlog = new Blog({ ...metaData, test: dataToAddd.test });
   newBlog.photos = mainImage.url;
   await newBlog.save();
   res.status(200).send("successfully posted blog");
@@ -65,6 +64,8 @@ const getLatestBlog = async (req, res) => {
 const updatedBlog = async (req, res) => {
   const blogId = req.query.blogId;
   const dataToUpdate = req.body;
+  // console.log(req.body);
+
   const file = req.file;
   if (file) {
     const image = await uploader.upload(

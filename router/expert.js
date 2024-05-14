@@ -13,5 +13,9 @@ const {
 router.post("/", upload.single("photos"), asyncMiddleWare(addExperts));
 router.get("/", asyncMiddleWare(getAllExperts));
 router.delete("/:expertId", asyncMiddleWare(deleteExpert));
-router.patch("/expertId", asyncMiddleWare(updateExperts));
+router.patch(
+  "/:expertId",
+  upload.single("photos"),
+  asyncMiddleWare(updateExperts)
+);
 module.exports = router;

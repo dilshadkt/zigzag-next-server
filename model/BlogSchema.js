@@ -11,6 +11,18 @@ const blogSchema = new mongoose.Schema({
   metaDescription: {
     type: String,
   },
+  metaKeyWord: {
+    type: [String],
+  },
+  ogTitle: {
+    type: String,
+  },
+  ogDescription: {
+    type: String,
+  },
+  path: {
+    type: String,
+  },
 });
 
 const Blog = mongoose.model("BlogsTest", blogSchema);

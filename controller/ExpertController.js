@@ -44,7 +44,32 @@ const deleteExpert = async (req, res) => {
 };
 ///// UPDATE EXPERTS 👨‍🔧👨‍🔧👨‍🔧👨‍🔧/////////
 const updateExperts = async (req, res) => {
-  const expert = await Expert.findByIdAndUpdate(req.params.expertId, req.body);
+  const file = req.file;
+  const expertId = req.params.expertId;
+  const dataToUpdate = req.body;
+
+  if (file) {
+    const image = await uploader.upload(
+      file.path,
+      {
+        public_id: file.originalname,
+      },
+      (error) => {
+        if (error) {
+          res.status(400).json({ error });
+        } else {
+          FileRemover(file);
+        }
+      }
+    );
+    dataToUpdate.image = image.url;
+    const expert = await Expert.findById(expertId);
+    await DeleteFromCloudinary(expert.image);
+  }
+  const expert = await Expert.findByIdAndUpdate(
+    req.params.expertId,
+    dataToUpdate
+  );
   await expert.save();
   res.status(200).send("succefully updated");
 };

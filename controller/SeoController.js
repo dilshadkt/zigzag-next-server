@@ -7,17 +7,19 @@ const FileRemover = require("../config/FileRemover/FileRemove");
 const PostSeoContent = async (req, res) => {
   const data = JSON.parse(req.body.data);
   const images = req.files;
-  const imageUrls = await Promise.all(
-    images.map((image) =>
-      uploader.upload(image.path).then((response) => response.url)
-    )
-  );
-  images.forEach((image) => FileRemover(image));
-  data.page.forEach((page, index) => {
-    if (imageUrls[index]) {
-      page.image = imageUrls[index];
-    }
-  });
+  if (images.length !== 0) {
+    const imageUrls = await Promise.all(
+      images.map((image) =>
+        uploader.upload(image.path).then((response) => response.url)
+      )
+    );
+    images.forEach((image) => FileRemover(image));
+    data.page.forEach((page, index) => {
+      if (imageUrls[index]) {
+        page.image = imageUrls[index];
+      }
+    });
+  }
 
   const metaData = _.pick(data.metaData, [
     "metaTitle",
@@ -54,20 +56,18 @@ const deleteContent = async (req, res) => {
   const id = req.query.contentId;
   const content = await Seo.findById(id);
   await content.deleteOne();
-  const photoAssetId = content.photos
-    .split("/")
-    [content.photos.split("/").length - 1].slice(0, -4);
-  const decodedName = decodeURIComponent(photoAssetId);
-  await uploader.destroy(decodedName);
+  // const photoAssetId = content.photos
+  //   .split("/")
+  //   [content.photos.split("/").length - 1].slice(0, -4);
+  // const decodedName = decodeURIComponent(photoAssetId);
+  // await uploader.destroy(decodedName);
   res.status(200).json({ message: "successfully deleted" });
 };
 
 const updateContent = async (req, res) => {
   const contentId = req.query.contentId;
   const contentToUpdate = JSON.parse(req.body.updation);
-  // console.log(contentToUpdate);
   const images = req.files;
-  console.log(images);
   const indexArray = [req.body.index];
   console.log(indexArray);
   if (images.length !== 0) {
