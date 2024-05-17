@@ -48,7 +48,7 @@ const getSeoContent = async (req, res) => {
 const getBlog = async (req, res) => {
   const blogPath = req.params.blogPath;
   const blog = await Seo.findOne({ path: blogPath });
-
+  if (!blog) return res.status(404).send("page not found");
   res.status(200).send(blog);
 };
 
