@@ -20,12 +20,13 @@ const postClient = async (req, res) => {
       }
     }
   );
-  const clients = new Client({
+  const client = new Client({
     image: clientLogo.url,
     name: req.body.name,
   });
-  await clients.save();
-  res.status(200).send(clientLogo.url);
+  await client.save();
+  const clients = await Client.find();
+  res.status(200).send({ clients });
 };
 //////////  GET ALL CLIENT 🤡🤡🤡🤡🤡//////////
 const getClients = async (req, res) => {
@@ -38,15 +39,17 @@ const deleteClient = async (req, res) => {
   const clientLogo = await Client.findById(req.params.clientId);
   await DeleteFromCloudinary(clientLogo.image);
   await clientLogo.deleteOne();
-  res.status(200).send("succefully deleted");
+  const clients = await Client.find();
+  res.status(200).send({ clients });
 };
 
 ////// UPDATE CLIENT ////////
 
 const updateClients = async (req, res) => {
   console.log(req.params.clientId);
-  const clients = await Client.findByIdAndUpdate(req.params.clientId, req.body);
-  await clients.save();
-  res.status(200).send("succesfully updated");
+  const client = await Client.findByIdAndUpdate(req.params.clientId, req.body);
+  await client.save();
+  const clients = await Client.find();
+  res.status(200).send({ clients });
 };
 module.exports = { postClient, getClients, deleteClient, updateClients };
