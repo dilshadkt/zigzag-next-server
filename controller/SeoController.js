@@ -33,7 +33,8 @@ const PostSeoContent = async (req, res) => {
   const newPage = new Seo(newPageData);
 
   await newPage.save();
-  res.status(200).send("successfully posted blog");
+  const pages = await Seo.find();
+  res.status(200).send({ pages });
 };
 const deleteImage = async (req, res) => {
   const imageId = req.params.imageId;
