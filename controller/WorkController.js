@@ -43,7 +43,7 @@ const getAllWork = async (req, res) => {
     {
       $project: {
         _id: 0, // Exclude the _id field from the output
-        uniqueTypes: 1, // Include the uniqueTypes field in the output
+        uniqueTypes: 1,
       },
     },
   ];
