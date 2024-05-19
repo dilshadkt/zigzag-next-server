@@ -53,7 +53,8 @@ const getAllWork = async (req, res) => {
     res.status(200).send(filteredWorkd);
   } else {
     const allWorks = await Work.find();
-    res.status(200).json({ allWorks, category: categories[0].uniqueTypes });
+    res.status(200).json("he hee");
+    // res.status(200).json({ allWorks, category: categories[0].uniqueTypes });
   }
 };
 
