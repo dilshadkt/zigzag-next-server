@@ -1,13 +1,15 @@
+const jwt = require("jsonwebtoken");
 const verifyLogin = async (req, res) => {
+  const { email, password } = req.body;
   const data = {
-    username: "jubair123",
+    username: "jubair@gmail.com",
     password: "12345",
   };
-  if (
-    req.body.username === data.username &&
-    req.body.password === data.password
-  ) {
-    res.status(200).send("successfully loged");
+  if (email === data.username && password === data.password) {
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.status(200).json({ token });
   } else {
     res.status(403).send("access denied");
   }
