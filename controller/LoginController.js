@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const verifyLogin = async (req, res) => {
   const { email, password } = req.body;
+  // user data
   const data = {
     username: "jubair@gmail.com",
     password: "12345",
