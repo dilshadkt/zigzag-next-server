@@ -9,26 +9,46 @@ const DeleteFromCloudinary = require("../config/DeleteFileCloudinary/DeleteFromC
 const postBlog = async (req, res) => {
   const file = req.files[0];
   const dataToAddd = JSON.parse(req.body.blog);
-  if (!file) return res.status(400).send("no picture privide");
 
-  const mainImage = await uploader.upload(
-    file.path,
-    {
-      public_id: file.originalname,
-    },
-    (error) => {
-      if (error) {
-        res.status(400).send(error);
-      } else {
-        FileRemover(file);
+  if (req.query.type === "dublicate") {
+    const { _id, ...dublicated } = dataToAddd;
+    const newBlog = new Blog(dublicated);
+    await newBlog.save();
+  } else {
+    if (!file) return res.status(400).send("no picture privide");
+
+    const mainImage = await uploader.upload(
+      file.path,
+      {
+        public_id: file.originalname,
+      },
+      (error) => {
+        if (error) {
+          res.status(400).send(error);
+        } else {
+          FileRemover(file);
+        }
       }
-    }
-  );
-  const metaData = dataToAddd.metaData;
-  const newBlog = new Blog({ ...metaData, test: dataToAddd.test });
-  newBlog.photos = mainImage.url;
-  await newBlog.save();
-  res.status(200).send("successfully posted blog");
+    );
+    const metaData = dataToAddd.metaData;
+    const newBlog = new Blog({ ...metaData, test: dataToAddd.test });
+    newBlog.photos = mainImage.url;
+    await newBlog.save();
+  }
+  const blogs = await Blog.find();
+  const data = blogs.map((item) => {
+    const $ = cheerio.load(item.test);
+    const heading = $("h1").text();
+    const description = $("p").text();
+    return {
+      heading: heading,
+      description: description,
+      photos: item.photos,
+      _id: item._id,
+    };
+  });
+
+  res.status(200).json({ blogs, data });
 };
 
 /// DELELTE BLOG 🤡🤡//////////////
@@ -115,7 +135,7 @@ const getAllTestBlog = async (req, res) => {
         _id: item._id,
       };
     });
-    res.status(200).send(data);
+    res.status(200).json({ data, blog });
   }
 };
 

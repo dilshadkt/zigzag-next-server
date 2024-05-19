@@ -7,6 +7,8 @@ const DeleteFromCloudinary = require("../config/DeleteFileCloudinary/DeleteFromC
 /////////   ADD NEW WORK   //////////////
 const postWork = async (req, res) => {
   let file = req.files[0];
+  const categories = ["Brand Identity", "Social Media"];
+  ["Brand Identity", "Social Media"];
   if (!file) return res.status(400).send("no picture attached");
   const Newimage = await uploader.upload(
     file.path,
@@ -31,12 +33,27 @@ const postWork = async (req, res) => {
 };
 /////// GET ALL WORK ///////////
 const getAllWork = async (req, res) => {
+  const pipeline = [
+    {
+      $group: {
+        _id: null, // Group all documents together
+        uniqueTypes: { $addToSet: { $trim: { input: "$type" } } }, // Add unique trimmed types to the set
+      },
+    },
+    {
+      $project: {
+        _id: 0, // Exclude the _id field from the output
+        uniqueTypes: 1, // Include the uniqueTypes field in the output
+      },
+    },
+  ];
+  const categories = await Work.aggregate(pipeline);
   if (req.query.type) {
     const filteredWorkd = await Work.find({ stared: req.query.type });
     res.status(200).send(filteredWorkd);
   } else {
     const allWorks = await Work.find();
-    res.status(200).send(allWorks);
+    res.status(200).json({ allWorks, category: categories[0].uniqueTypes });
   }
 };
 
@@ -46,15 +63,16 @@ const deleteWork = async (req, res) => {
   await DeleteFromCloudinary(work.image);
 
   await Work.findByIdAndDelete(req.params.worksId);
-
-  res.status(200).send("successfully dleleted");
+  const works = await Work.find();
+  res.status(200).json({ works });
 };
 
 ////// UPDATE WORK //////////////
 const updateWorks = async (req, res) => {
   const work = await Work.findByIdAndUpdate(req.params.worksId, req.body);
   await work.save();
-  res.status(200).send("works updated");
+  const works = await Work.find();
+  res.status(200).json({ works });
 };
 
 ///// GET LATEST WOEK ////////
