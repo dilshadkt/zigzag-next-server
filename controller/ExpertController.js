@@ -76,5 +76,20 @@ const updateExperts = async (req, res) => {
   const experts = await Expert.find();
   res.status(200).json({ experts });
 };
+const changeOrder = async (req, res) => {
+  const { data } = req.body;
+  if (!Array.isArray(data)) {
+    return res.status(400).send("Invalid data format");
+  }
+  await Expert.deleteMany({});
+  await Expert.insertMany(data);
+  res.send("Data updated successfully");
+};
 
-module.exports = { addExperts, getAllExperts, deleteExpert, updateExperts };
+module.exports = {
+  addExperts,
+  getAllExperts,
+  deleteExpert,
+  updateExperts,
+  changeOrder,
+};

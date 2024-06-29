@@ -9,9 +9,11 @@ const {
   deleteWork,
   updateWorks,
   getLatestWorkd,
+  changeOrder,
 } = require("../controller/WorkController");
 router.post("/", upload.array("photos", 6), asyncMiddleWare(postWork));
 router.get("/", asyncMiddleWare(getAllWork));
+router.post("/order", asyncMiddleWare(changeOrder));
 router.delete("/:worksId", asyncMiddleWare(deleteWork));
 router.patch("/:worksId", asyncMiddleWare(updateWorks));
 router.get("/latest", asyncMiddleWare(getLatestWorkd));

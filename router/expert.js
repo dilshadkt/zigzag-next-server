@@ -8,9 +8,11 @@ const {
   getAllExperts,
   deleteExpert,
   updateExperts,
+  changeOrder,
 } = require("../controller/ExpertController");
 
 router.post("/", upload.single("photos"), asyncMiddleWare(addExperts));
+router.post("/order", asyncMiddleWare(changeOrder));
 router.get("/", asyncMiddleWare(getAllExperts));
 router.delete("/:expertId", asyncMiddleWare(deleteExpert));
 router.patch(

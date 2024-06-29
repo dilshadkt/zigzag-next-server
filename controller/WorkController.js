@@ -69,6 +69,7 @@ const deleteWork = async (req, res) => {
 
 ////// UPDATE WORK //////////////
 const updateWorks = async (req, res) => {
+  await Work.updateMany;
   const work = await Work.findByIdAndUpdate(req.params.worksId, req.body);
   await work.save();
   const works = await Work.find();
@@ -80,10 +81,21 @@ const getLatestWorkd = async (req, res) => {
   const latestWork = await Work.find().sort({ _id: -1 }).limit(4);
   res.status(200).send(latestWork);
 };
+
+const changeOrder = async (req, res) => {
+  const { data } = req.body;
+  if (!Array.isArray(data)) {
+    return res.status(400).send("Invalid data format");
+  }
+  await Work.deleteMany({});
+  await Work.insertMany(data);
+  res.send("Data updated successfully");
+};
 module.exports = {
   postWork,
   getAllWork,
   deleteWork,
   updateWorks,
   getLatestWorkd,
+  changeOrder,
 };

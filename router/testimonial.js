@@ -7,11 +7,13 @@ const {
   postTestimonial,
   getTestimonial,
   deleteTestimonial,
+  changeOrder,
   updateTestimonias,
 } = require("../controller/TestimonialControll");
 
 router.post("/", upload.single("photos"), asyncMiddleWare(postTestimonial));
 router.get("/", asyncMiddleWare(getTestimonial));
+router.post("/order", asyncMiddleWare(changeOrder));
 router.delete("/:id", asyncMiddleWare(deleteTestimonial));
 router.patch(
   "/:id",

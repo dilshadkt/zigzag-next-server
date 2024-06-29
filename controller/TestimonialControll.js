@@ -82,9 +82,21 @@ const updateTestimonias = async (req, res) => {
   const testimonials = await Testimonial.find();
   res.status(200).json({ testimonials });
 };
+
+const changeOrder = async (req, res) => {
+  const { data } = req.body;
+  if (!Array.isArray(data)) {
+    return res.status(400).send("Invalid data format");
+  }
+  await Testimonial.deleteMany({});
+  await Testimonial.insertMany(data);
+  res.send("Data updated successfully");
+};
 module.exports = {
   postTestimonial,
   getTestimonial,
   deleteTestimonial,
   updateTestimonias,
+
+  changeOrder,
 };

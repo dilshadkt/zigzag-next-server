@@ -46,10 +46,24 @@ const deleteClient = async (req, res) => {
 ////// UPDATE CLIENT ////////
 
 const updateClients = async (req, res) => {
-  console.log(req.params.clientId);
   const client = await Client.findByIdAndUpdate(req.params.clientId, req.body);
   await client.save();
   const clients = await Client.find();
   res.status(200).send({ clients });
 };
-module.exports = { postClient, getClients, deleteClient, updateClients };
+const changeOrder = async (req, res) => {
+  const { data } = req.body;
+  if (!Array.isArray(data)) {
+    return res.status(400).send("Invalid data format");
+  }
+  await Client.deleteMany({});
+  await Client.insertMany(data);
+  res.send("Data updated successfully");
+};
+module.exports = {
+  postClient,
+  getClients,
+  deleteClient,
+  updateClients,
+  changeOrder,
+};
