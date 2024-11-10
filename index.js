@@ -13,6 +13,8 @@ const loginRout = require("./router/loginRout");
 const seoRoute = require("./router/seo");
 const categoryRout = require("./router/category");
 const offerRoute = require("./router/offer");
+const careerRoute = require("./router/career");
+const leadRoute = require("./router/lead");
 const { cloudinaryConfig } = require("./config/Cloudinary");
 mongoose
   .connect(process.env.MONGO_URL)
@@ -32,6 +34,8 @@ app.use("/seo", seoRoute);
 app.use("/verifyLogin", loginRout);
 app.use("/category", categoryRout);
 app.use("/offer", offerRoute);
+app.use("/career", careerRoute);
+app.use("/lead", leadRoute);
 
 app.listen(process.env.PORT || 5000, () =>
   console.log(`server is running on port  ${process.env.PORT}`)
