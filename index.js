@@ -15,6 +15,16 @@ const categoryRout = require("./router/category");
 const offerRoute = require("./router/offer");
 const careerRoute = require("./router/career");
 const leadRoute = require("./router/lead");
+const contactLead = require("./router/contactLead");
+
+const academicTestmonialRoute = require("./router/academy/testmonial");
+const academicCertificateRoute = require("./router/academy/certificate");
+const academicStoriesRoute = require("./router/academy/stories");
+const academicPlacementRoute = require("./router/academy/placement");
+const academicContactLeadRoutes = require("./router/academy/contact");
+const academicGalleryRoutes = require("./router/academy/gallery");
+const academicBlogRoutes = require("./router/academy/blog");
+
 const { cloudinaryConfig } = require("./config/Cloudinary");
 mongoose
   .connect(process.env.MONGO_URL)
@@ -36,6 +46,15 @@ app.use("/category", categoryRout);
 app.use("/offer", offerRoute);
 app.use("/career", careerRoute);
 app.use("/lead", leadRoute);
+app.use("/contact", contactLead);
+// academic
+app.use("/academic/testimonial", academicTestmonialRoute);
+app.use("/academic/certificate", academicCertificateRoute);
+app.use("/academic/stories", academicStoriesRoute);
+app.use("/academic/placement", academicPlacementRoute);
+app.use("/academic/contact-leads", academicContactLeadRoutes);
+app.use("/academic/gallery", academicGalleryRoutes);
+app.use("/academic/blogs", academicBlogRoutes);
 
 app.listen(process.env.PORT || 5000, () =>
   console.log(`server is running on port  ${process.env.PORT}`)
