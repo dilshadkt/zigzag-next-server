@@ -7,6 +7,7 @@ const postTestimonial = async (req, res) => {
   try {
     // Check if file exists
     const file = req.file;
+    console.log(file);
     if (!file) {
       return res.status(400).json({
         success: false,

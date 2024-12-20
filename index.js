@@ -24,6 +24,7 @@ const academicPlacementRoute = require("./router/academy/placement");
 const academicContactLeadRoutes = require("./router/academy/contact");
 const academicGalleryRoutes = require("./router/academy/gallery");
 const academicBlogRoutes = require("./router/academy/blog");
+const academicPageRoutes = require("./router/academy/page");
 
 const { cloudinaryConfig } = require("./config/Cloudinary");
 mongoose
@@ -55,6 +56,7 @@ app.use("/academic/placement", academicPlacementRoute);
 app.use("/academic/contact-leads", academicContactLeadRoutes);
 app.use("/academic/gallery", academicGalleryRoutes);
 app.use("/academic/blogs", academicBlogRoutes);
+app.use("/academic/pages", academicPageRoutes);
 
 app.listen(process.env.PORT || 5000, () =>
   console.log(`server is running on port  ${process.env.PORT}`)
