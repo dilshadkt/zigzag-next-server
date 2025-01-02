@@ -7,6 +7,7 @@ const {
   createPage,
   updatePage,
   deletePage,
+  getPageByPath,
 } = require("../../controller/academy/page");
 
 const upload = multer({ dest: "uploads/" }); // Configure multer for file uploads
@@ -17,6 +18,8 @@ router.get("/", getPages); // Get all pages with optional filters
 // Route to get a single page by ID
 router.get("/:id", getPage); // Get single page by ID
 
+//Route to get a single page by path name
+router.get("/path/:pathName", getPageByPath);
 // Route to create a new page
 router.post("/", upload.single("backgroundImage"), createPage); // Create new page with optional profile image upload
 

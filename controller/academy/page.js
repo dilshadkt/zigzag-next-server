@@ -25,6 +25,34 @@ exports.getPage = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getPageByPath = async (req, res) => {
+  try {
+    const { pathName } = req.params;
+
+    if (!pathName) {
+      return res.status(400).json({ message: "Path name is required" });
+    }
+
+    const page = await Page.findOne({ path: pathName }); // Compare `path` to `pathName`
+
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    res.status(200).json({
+      message: "Successfully found page by pathname",
+      success: true,
+      page,
+    });
+  } catch (error) {
+    res.status(500).json({
+      // Use status 500 for server errors
+      message: "Failed to find page by pathname",
+      success: false,
+      error: error.message,
+    });
+  }
+};
 
 // Create a new page
 exports.createPage = async (req, res) => {
