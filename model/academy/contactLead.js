@@ -7,23 +7,54 @@ const contactLeadSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    platform: {
+      type: String,
+    },
+    place: {
+      type: String,
+    },
+    qualification: {
+      type: String,
+    },
+    leadQaulity: {
+      type: String,
+    },
+    prefered: {
+      type: String,
+      enum: ["Online", "Offline", "Weekend"],
+    },
+    FolowpDate: {
+      type: Date,
+    },
+    updatedAtttender: {
+      type: String,
+    },
+    joining: {
+      type: String,
+    },
+
     email: {
       type: String,
-      required: true,
       trim: true,
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
     },
     number: {
       type: String,
-      required: true,
       trim: true,
-      match: [/^[0-9]{10}$/, "Please enter a valid 10-digit phone number"],
     },
+    whatsAppNumber: {
+      type: String,
+    },
+    response: [
+      {
+        message: { type: String, required: true },
+        date: { type: Date, default: Date.now },
+      },
+    ],
     message: {
       type: String,
       required: true,
-      trim: true,
     },
     status: {
       type: String,

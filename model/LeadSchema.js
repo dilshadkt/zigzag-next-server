@@ -9,9 +9,15 @@ const leadSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    trim: true,
+    lowercase: true,
+    match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
   },
   number: {
     type: String,
+    required: true,
+    trim: true,
+    match: [/^[0-9]{10}$/, "Please enter a valid 10-digit phone number"],
   },
 });
 

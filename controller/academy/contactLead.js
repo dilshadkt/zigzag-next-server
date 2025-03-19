@@ -3,15 +3,24 @@ const { ContactLead } = require("../../model/academy/contactLead");
 // Create new contact lead
 const createContactLead = async (req, res) => {
   try {
+    // Create contact lead with required fields
     const contactLead = new ContactLead({
-      fullName: req.body.fullName,
       email: req.body.email,
       number: req.body.number,
       message: req.body.message,
     });
 
+    // Add optional fields if they exist in the request
+    if (req.body.fullName) contactLead.fullName = req.body.fullName;
+    if (req.body.name) contactLead.fullName = req.body.name;
+    if (req.body.status) contactLead.status = req.body.status;
+    if (req.body.platform) contactLead.platform = req.body.platform;
+    if (req.body.joining) contactLead.joining = req.body.joining;
+
+    // Save the contact lead
     await contactLead.save();
 
+    // Return all contact leads sorted by creation date
     const contactLeads = await ContactLead.find().sort({ createdAt: -1 });
 
     res.status(201).json({
@@ -27,7 +36,6 @@ const createContactLead = async (req, res) => {
     });
   }
 };
-
 // Get all contact leads
 const getContactLeads = async (req, res) => {
   try {
@@ -174,12 +182,86 @@ const getContactLeadsByStatus = async (req, res) => {
     });
   }
 };
+const bulkUploads = async (req, res) => {
+  try {
+    const leads = req.body;
+
+    // Validate each lead
+    const validLeads = [];
+    const errors = [];
+
+    for (const lead of leads) {
+      try {
+        const newLead = new ContactLead(lead);
+        await newLead.validate();
+        validLeads.push(newLead);
+      } catch (error) {
+        errors.push({
+          lead,
+          error: error.message,
+        });
+      }
+    }
+
+    if (validLeads.length === 0) {
+      return res.status(400).json({
+        isSuccess: false,
+        message: "No valid leads found",
+        errors,
+      });
+    }
+
+    const result = await ContactLead.insertMany(validLeads, { ordered: false });
+
+    res.status(200).json({
+      isSuccess: true,
+      insertedCount: result.length,
+      errors,
+    });
+  } catch (error) {
+    console.error("Bulk upload error:", error);
+    res.status(500).json({
+      isSuccess: false,
+      message: "Error processing bulk upload",
+    });
+  }
+};
+
+const updateContactLead = async (req, res) => {
+  try {
+    const contactLead = await ContactLead.findByIdAndUpdate(
+      req.params.leadId,
+      req.body,
+      { new: true }
+    );
+
+    if (!contactLead) {
+      return res.status(404).json({
+        success: false,
+        message: "Contact lead not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Contact lead status updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update contact lead status",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
+  bulkUploads,
   createContactLead,
   getContactLeads,
   getContactLead,
   updateContactLeadStatus,
   deleteContactLead,
   getContactLeadsByStatus,
+  updateContactLead,
 };
