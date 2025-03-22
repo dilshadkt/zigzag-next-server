@@ -257,8 +257,6 @@ const updateContactLead = async (req, res) => {
 
 const bulkDelete = async (req, res) => {
   const { ids } = req.body;
-  console.log("first");
-  console.log(req.body);
   if (!ids || !Array.isArray(ids)) {
     return res
       .status(400)
