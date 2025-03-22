@@ -7,6 +7,13 @@ const contactLeadSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    date: {
+      type: String,
+      default: () => {
+        const today = new Date();
+        return today.toLocaleDateString("en-GB"); // Format: DD-MM-YYYY
+      },
+    },
     platform: {
       type: String,
     },
@@ -54,7 +61,9 @@ const contactLeadSchema = new mongoose.Schema(
     ],
     message: {
       type: String,
-      required: true,
+    },
+    remarks: {
+      type: String,
     },
     status: {
       type: String,

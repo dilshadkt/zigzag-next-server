@@ -255,6 +255,29 @@ const updateContactLead = async (req, res) => {
   }
 };
 
+const bulkDelete = async (req, res) => {
+  const { ids } = req.body;
+  console.log("first");
+  console.log(req.body);
+  if (!ids || !Array.isArray(ids)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid IDs provided" });
+  }
+  try {
+    await ContactLead.deleteMany({ _id: { $in: ids } });
+    const updatedData = await ContactLead.find();
+    res.status(200).json({
+      success: true,
+      message: "Items deleted successfully",
+      data: updatedData,
+    });
+  } catch (error) {
+    console.error("Failed to delete items:", error);
+    res.status(500).json({ success: false, message: "Failed to delete items" });
+  }
+};
+
 module.exports = {
   bulkUploads,
   createContactLead,
@@ -264,4 +287,5 @@ module.exports = {
   deleteContactLead,
   getContactLeadsByStatus,
   updateContactLead,
+  bulkDelete,
 };
