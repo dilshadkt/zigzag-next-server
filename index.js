@@ -26,6 +26,7 @@ const academicGalleryRoutes = require("./router/academy/gallery");
 const academicBlogRoutes = require("./router/academy/blog");
 const academicPageRoutes = require("./router/academy/page");
 const eventRouter = require("./router/academy/event");
+const userRoutes = require("./router/userRoute");
 
 const { cloudinaryConfig } = require("./config/Cloudinary");
 mongoose
@@ -49,6 +50,7 @@ app.use("/offer", offerRoute);
 app.use("/career", careerRoute);
 app.use("/lead", leadRoute);
 app.use("/contact", contactLead);
+app.use("/user", userRoutes);
 // academic
 app.use("/academic/testimonial", academicTestmonialRoute);
 app.use("/academic/certificate", academicCertificateRoute);
