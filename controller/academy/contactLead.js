@@ -82,7 +82,7 @@ const getContactLead = async (req, res) => {
 const updateContactLeadStatus = async (req, res) => {
   try {
     if (
-      !["Pending", "Followed", "In Progress", "Closed", "Archived"].includes(
+      !["Connected", "Not Connected", "Pending", "Closed", "Rejected"].includes(
         req.body.status
       )
     ) {
@@ -156,7 +156,7 @@ const getContactLeadsByStatus = async (req, res) => {
 
     if (
       !status ||
-      !["Pending", "Followed", "In Progress", "Closed", "Archived"].includes(
+      !["Connected", "Not Connected", "Pending", "Closed", "Rejected"].includes(
         status
       )
     ) {

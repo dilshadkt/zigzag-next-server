@@ -30,6 +30,10 @@ const contactLeadSchema = new mongoose.Schema(
       type: String,
       enum: ["Online", "Offline", "Weekend"],
     },
+    chosenTime: {
+      type: String,
+      enum: ["Moring", "Afternoon", "Night"],
+    },
     FolowpDate: {
       type: Date,
     },
@@ -67,7 +71,7 @@ const contactLeadSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Followed", "In Progress", "Closed", "Archived"],
+      enum: ["Connected", "Not Connected", "Pending", "Closed", "Rejected"],
       default: "Pending",
     },
   },
