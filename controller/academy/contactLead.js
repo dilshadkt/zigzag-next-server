@@ -16,6 +16,20 @@ const createContactLead = async (req, res) => {
     if (req.body.status) contactLead.status = req.body.status;
     if (req.body.platform) contactLead.platform = req.body.platform;
     if (req.body.joining) contactLead.joining = req.body.joining;
+    if (req.body.date) contactLead.date = req.body.date;
+    if (req.body.place) contactLead.place = req.body.place;
+    if (req.body.remarks) contactLead.remarks = req.body.remarks;
+    if (req.body.response) contactLead.response = req.body.response;
+    if (req.body.chosenTime) contactLead.chosenTime = req.body.chosenTime;
+    if (req.body.FolowpDate) contactLead.FolowpDate = req.body.FolowpDate;
+    if (req.body.updatedAtttender)
+      contactLead.updatedAtttender = req.body.updatedAtttender;
+    if (req.body.prefered) contactLead.prefered = req.body.prefered;
+    if (req.body.leadQaulity) contactLead.leadQaulity = req.body.leadQaulity;
+    if (req.body.qualification)
+      contactLead.qualification = req.body.qualification;
+    if (req.body.whatsAppNumber)
+      contactLead.whatsAppNumber = req.body.whatsAppNumber;
 
     // Save the contact lead
     await contactLead.save();

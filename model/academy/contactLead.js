@@ -32,7 +32,7 @@ const contactLeadSchema = new mongoose.Schema(
     },
     chosenTime: {
       type: String,
-      enum: ["Moring", "Afternoon", "Night"],
+      // enum: ["Moring", "Afternoon", "Night"],
     },
     FolowpDate: {
       type: Date,
